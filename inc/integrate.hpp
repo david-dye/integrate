@@ -86,15 +86,21 @@ public:
         T error = init[1];
         std::priority_queue<Interval<T>> pq;
         pq.push(Interval<T>(x_min, x_max, integral, error));
-        while (
-            !has_converged(
-                integral,
-                error,
-                abs_convergence_threshold,
-                rel_convergence_threshold
-            ) &&
-            pq.size() < MAX_N_INTERVALS
-        ) {
+        
+        while (!has_converged(
+            integral,
+            error,
+            abs_convergence_threshold,
+            rel_convergence_threshold
+        )) {
+            if (pq.size() >= MAX_N_INTERVALS) {
+                return IntegrationResult<T>(
+                    integral,
+                    error,
+                    false,
+                    "Convergence Error: integration maximum interval count reached."
+                );
+            }
             const Interval<T>& worst_interval = pq.top();
             const T x_min = worst_interval.x_min;
             const T x_max = worst_interval.x_max;
@@ -108,15 +114,6 @@ public:
             pq.push(Interval<T>(x_mid, x_max, right[0], right[1]));
             integral += left[0] + right[0];
             error += left[1] + right[1];
-        }
-
-        if (pq.size() >= MAX_N_INTERVALS) {
-            return IntegrationResult<T>(
-                integral,
-                error,
-                false,
-                "Convergence Error: integration maximum interval count reached."
-            );
         }
 
         return IntegrationResult<T>(integral, error);
