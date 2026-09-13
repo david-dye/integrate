@@ -92,4 +92,13 @@ int main() {
         std::cout << ret << std::endl;
         std::cout << "Number of function calls: " << g_n_total_calls << std::endl;
     }
+
+    {
+        g_n_total_calls = 0;
+        Integrate::IntegrationResult<double> ret = Integrate::integrate_gauss_kronrod(
+            endpoint_singularity, 0., 1.
+        );
+        std::cout << ret << std::endl;
+        std::cout << "Number of function calls: " << g_n_total_calls << std::endl;
+    }
 }
